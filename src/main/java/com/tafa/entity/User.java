@@ -24,8 +24,8 @@ public class User implements Serializable{
 	@SequenceGenerator(name = "users_id_seq", sequenceName = "users_id_seq", allocationSize = 1)
 	private Long id;
 	
-	@Column(name = "name")
-	private String name;
+//	@Column(name = "name")
+//	private String name;
 
 	private int phone;
 
@@ -57,12 +57,6 @@ public class User implements Serializable{
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 	public int getPhone() {
 		return phone;
