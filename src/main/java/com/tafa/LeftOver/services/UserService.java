@@ -1,6 +1,7 @@
 package com.tafa.LeftOver.services;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -64,5 +65,9 @@ public class UserService implements UserDetailsService{
 	
 	public User findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+	
+	public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 }

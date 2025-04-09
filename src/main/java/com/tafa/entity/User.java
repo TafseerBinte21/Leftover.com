@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -46,6 +47,10 @@ public class User implements Serializable{
 	private String gender;
 	
 	private String mobile;
+	
+	@Lob
+	@Column(name = "image", columnDefinition = "BYTEA") 
+	private byte[] image;
 	
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -117,5 +122,11 @@ public class User implements Serializable{
 	}
 	public void setDob(Date dob) {
 		this.dob = dob;
+	}
+	public byte[] getImage() {
+		return image;
+	}
+	public void setImage(byte[] image) {
+		this.image = image;
 	}
 }
