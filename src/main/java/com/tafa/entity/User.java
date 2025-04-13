@@ -2,13 +2,18 @@ package com.tafa.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -56,6 +61,21 @@ public class User implements Serializable{
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date dob;
 	
+	@ManyToMany
+	@JoinTable(name = "friendlists", schema = "leftover", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "friendId"))
+	private Set<User> friendlists = new HashSet<User>();
+	
+	
+	@ManyToMany
+	@JoinTable(name = "friendRequests", schema = "leftover", joinColumns = @JoinColumn(name = "requesterId"), inverseJoinColumns = @JoinColumn(name = "userId"))
+	private Set<User> sentRequests = new HashSet<User>();
+	
+	
+	@ManyToMany(targetEntity = User.class, mappedBy = "sentRequests")
+	private Set<User> receivedRequests = new HashSet<User>();
+	
+	@Column(name = "friend_count")
+	private Integer  friendCount;
 	
 	public Long getId() {
 		return id;
@@ -129,4 +149,57 @@ public class User implements Serializable{
 	public void setImage(byte[] image) {
 		this.image = image;
 	}
+	public Set<User> getFriendlist() {
+		return friendlists;
+	}
+	
+	public Set<Long> getfriendIds() {
+		Set<Long> friendIds = new HashSet<>();
+		for (User friendlist : friendlists) {
+			friendIds.add(friendlist.id);
+		}
+		return friendIds;
+	}
+	
+	public void setFriendlist(Set<User> friendlists) {
+		this.friendlists = friendlists;
+	}
+	public Set<User> getSentRequests() {
+		return sentRequests;
+	}
+	
+	
+	public Set<Long> getSentRequestIds() {
+		Set<Long> sentRequestIds = new HashSet<>();
+		for (User sentRequest : sentRequests) {
+			sentRequestIds.add(sentRequest.id);
+		}
+		return sentRequestIds;
+	}
+
+	public void setSentRequests(Set<User> sentRequests) {
+		this.sentRequests = sentRequests;
+	}
+	public Set<User> getReceivedRequests() {
+		return receivedRequests;
+	}
+	
+	public Set<Long> getReceivedRequestIds() {
+		Set<Long> receivedRequestIds = new HashSet<>();
+		for (User receivedRequest : receivedRequests) {
+			receivedRequestIds.add(receivedRequest.id);
+		}
+		return receivedRequestIds;
+	}
+	public void setReceivedRequests(Set<User> receivedRequests) {
+		this.receivedRequests = receivedRequests;
+	}
+	public Integer getFriendCount() {
+		return friendCount;
+	}
+	public void setFriendCount(Integer friendCount) {
+		this.friendCount = friendCount;
+	}
+	
+
 }

@@ -11,6 +11,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tafa.LeftOver.dto.postDTO;
+import com.tafa.LeftOver.implementation.PostServiceImpl;
 import com.tafa.LeftOver.repository.PostRepository;
+import com.tafa.LeftOver.services.PostService;
 import com.tafa.LeftOver.services.UserService;
 import com.tafa.entity.Post;
 import com.tafa.entity.User;
@@ -33,6 +37,8 @@ public class PostRestController {
 	 @Autowired
 	 private UserService userservice;
 	 
+	 @Autowired
+	 private PostServiceImpl postService;
 	 
 	 @RequestMapping(value = "/post/save", method = RequestMethod.POST, consumes = "multipart/form-data", produces = "application/json")
 	 public ResponseEntity<Map<String, Object>> createPost(
@@ -141,5 +147,11 @@ public class PostRestController {
 	            response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 	            return ResponseEntity.internalServerError().body(response);
 	        }
+	    }
+	 
+	 
+	 @GetMapping("/owner-post/{userId}")
+	    public Map<String, Object> getPostsByUserId(@PathVariable Long userId) {
+	        return postService.getPostsByUserId(userId);
 	    }
 }
