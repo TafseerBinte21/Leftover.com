@@ -20,9 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tafa.LeftOver.dto.postDTO;
+import com.tafa.LeftOver.dto.userSummaryDto;
 import com.tafa.LeftOver.implementation.PostServiceImpl;
+import com.tafa.LeftOver.repository.CommentReppository;
 import com.tafa.LeftOver.repository.PostRepository;
+import com.tafa.LeftOver.repository.ReactionRepository;
+import com.tafa.LeftOver.services.CommentService;
 import com.tafa.LeftOver.services.PostService;
+import com.tafa.LeftOver.services.ReactionService;
 import com.tafa.LeftOver.services.UserService;
 import com.tafa.entity.Post;
 import com.tafa.entity.User;
@@ -39,6 +44,13 @@ public class PostRestController {
 	 
 	 @Autowired
 	 private PostServiceImpl postService;
+	 
+	 
+	 @Autowired
+	 private ReactionService reactionService;
+
+	 @Autowired
+	 private CommentService commentService;
 	 
 	 @RequestMapping(value = "/post/save", method = RequestMethod.POST, consumes = "multipart/form-data", produces = "application/json")
 	 public ResponseEntity<Map<String, Object>> createPost(
@@ -153,5 +165,40 @@ public class PostRestController {
 	 @GetMapping("/owner-post/{userId}")
 	    public Map<String, Object> getPostsByUserId(@PathVariable Long userId) {
 	        return postService.getPostsByUserId(userId);
+	    }
+	 
+	 
+	 @GetMapping("reactors/{postId}")
+	    public ResponseEntity<Map<String, Object>> getReactors(@PathVariable Long postId) {
+	        Map<String, Object> response = new HashMap<>();
+	        try {
+	            List<userSummaryDto> reactors = reactionService.getReactorsByPostId(postId);
+	            response.put("msg", "Reactor list fetched successfully");
+	            response.put("data", reactors);
+	            response.put("status", HttpStatus.OK.value());
+	            return new ResponseEntity<>(response, HttpStatus.OK);
+	        } catch (Exception e) {
+	            response.put("msg", "Failed to fetch reactors");
+	            response.put("error", e.getMessage());
+	            response.put("status", HttpStatus.BAD_REQUEST.value());
+	            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	        }
+	    }
+
+	    @GetMapping("commenters/{postId}")
+	    public ResponseEntity<Map<String, Object>> getCommenters(@PathVariable Long postId) {
+	        Map<String, Object> response = new HashMap<>();
+	        try {
+	            List<userSummaryDto> commenters = commentService.getCommentersByPostId(postId);
+	            response.put("msg", "Commenter list fetched successfully");
+	            response.put("data", commenters);
+	            response.put("status", HttpStatus.OK.value());
+	            return new ResponseEntity<>(response, HttpStatus.OK);
+	        } catch (Exception e) {
+	            response.put("msg", "Failed to fetch commenters");
+	            response.put("error", e.getMessage());
+	            response.put("status", HttpStatus.BAD_REQUEST.value());
+	            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	        }
 	    }
 }

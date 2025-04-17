@@ -53,7 +53,7 @@ public class User implements Serializable{
 	
 	private String mobile;
 	
-	@Lob
+	
 	@Column(name = "image", columnDefinition = "BYTEA") 
 	private byte[] image;
 	

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.tafa.LeftOver.dto.userDTO;
 import com.tafa.LeftOver.repository.UsersRepository;
@@ -349,6 +352,40 @@ public class UserRestController{
 	    public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable("userId") Long userId) {
 	        Map<String, Object> response = userService.getUserDetailsById(userId);
 	        return new ResponseEntity<>(response, HttpStatus.valueOf((Integer) response.get("status")));
+	    }
+	 
+	 
+	 @PostMapping(value = "/upload-image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	    public ResponseEntity<Map<String, Object>> uploadUserImage(
+	            @PathVariable Long id,
+	            @RequestParam("image") MultipartFile file) {
+	        
+	        Map<String, Object> response = new HashMap<>();
+	        
+	        try {
+	            Optional<User> optionalUser = userRepository.findById(id);
+	            
+	            if (!optionalUser.isPresent()) {
+	                response.put("msg", "User not found");
+	                response.put("status", HttpStatus.NOT_FOUND.value());
+	                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	            }
+
+	            User user = optionalUser.get();
+	            user.setImage(file.getBytes());
+
+	            User updatedUser = userRepository.save(user);
+
+	            response.put("msg", "Image uploaded successfully");
+	            response.put("data", updatedUser);
+	            response.put("status", HttpStatus.OK.value());
+	            return new ResponseEntity<>(response, HttpStatus.OK);
+	        } catch (Exception e) {
+	            response.put("msg", "Image upload failed");
+	            response.put("error", e.getMessage());
+	            response.put("status", HttpStatus.BAD_REQUEST.value());
+	            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	        }
 	    }
 
 
